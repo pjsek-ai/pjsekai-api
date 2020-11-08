@@ -2,7 +2,7 @@ const MongoClient = require('mongodb').MongoClient;
 
 module.exports = function (app) {
   const mongodbConfig = app.get('mongodb');
-  const connection = `mongodb://${mongodbConfig.host}:${mongodbConfig.port}`;
+  const connection = `mongodb://${mongodbConfig.user}:${mongodbConfig.password}@${mongodbConfig.host}:${mongodbConfig.port}`;
   const database = mongodbConfig.db;
   const mongoClient = MongoClient.connect(connection, { useNewUrlParser: true });
 

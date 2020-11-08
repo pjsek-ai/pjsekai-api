@@ -4,7 +4,7 @@ const logger = require('./logger');
 module.exports = function (app) {
   const mongodbConfig = app.get('mongodb');
   mongoose.connect(
-    `mongodb://${mongodbConfig.host}:${mongodbConfig.port}/${mongodbConfig.db}`,
+    `mongodb://${mongodbConfig.user}:${mongodbConfig.password}@${mongodbConfig.host}:${mongodbConfig.port}`,
     { useCreateIndex: true, useNewUrlParser: true }
   ).catch(err => {
     logger.error(err);

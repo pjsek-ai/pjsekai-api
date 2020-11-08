@@ -23,7 +23,9 @@ module.exports = {
       discard('_id'),
       alterItems(item => ({
         ...item,
-        datetime: item.datetime.getTime(),
+        ...item.datetime ? {
+          datetime: item.datetime.getTime()
+        } : {},
       }))
     ],
     find: [],
