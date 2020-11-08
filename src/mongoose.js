@@ -3,8 +3,9 @@ const logger = require('./logger');
 
 module.exports = function (app) {
   const mongodbConfig = app.get('mongodb');
+  const uri = mongodbConfig.user ? `mongodb://${encodeURIComponent(mongodbConfig.user)}:${encodeURIComponent(mongodbConfig.password)}@${mongodbConfig.host}:${mongodbConfig.port}` : `mongodb://${mongodbConfig.host}:${mongodbConfig.port}`;
   mongoose.connect(
-    `mongodb://${mongodbConfig.user}:${mongodbConfig.password}@${mongodbConfig.host}:${mongodbConfig.port}`,
+    uri,
     { useCreateIndex: true, useNewUrlParser: true }
   ).catch(err => {
     logger.error(err);

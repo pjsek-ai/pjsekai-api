@@ -1,10 +1,10 @@
 {
-  "host": "localhost",
-  "port": 3030,
+  "host": "HOST",
+  "port": "PORT",
   "mongodb": {
-    "user": "pjsekai-api",
-    "password": "X1QPYmL81hjMWQRs2XO/Mv3p6vxJPZVuUiygW43dtuc=",
-    "host": "db-pjsekai.erikchan002.com",
+    "user": "MONGO_USER",
+    "password": "MONGO_PWD",
+    "host": "MONGO_HOST",
     "port": 27017,
     "db": "pjsekai"
   }
