@@ -1,24 +1,28 @@
-// users-model.js - A mongoose model
-//
-// See http://mongoosejs.com/docs/models.html
+// See http://docs.sequelizejs.com/en/latest/docs/models-definition/
 // for more of what you can do here.
+const Sequelize = require('sequelize');
+const DataTypes = Sequelize.DataTypes;
+
 module.exports = function (app) {
-  const modelName = 'users';
-  const mongooseClient = app.get('mongooseClient');
-  const schema = new mongooseClient.Schema({
+  const sequelizeClient = app.get('sequelizeClient');
+  const users = sequelizeClient.define('users', {
   
   
-    googleId: { type: String },
+    googleId: { type: DataTypes.STRING },
   
   }, {
-    timestamps: true
+    hooks: {
+      beforeCount(options) {
+        options.raw = true;
+      }
+    }
   });
 
-  // This is necessary to avoid model compilation errors in watch mode
-  // see https://mongoosejs.com/docs/api/connection.html#connection_Connection-deleteModel
-  if (mongooseClient.modelNames().includes(modelName)) {
-    mongooseClient.deleteModel(modelName);
-  }
-  return mongooseClient.model(modelName, schema);
+  // eslint-disable-next-line no-unused-vars
+  users.associate = function (models) {
+    // Define associations here
+    // See http://docs.sequelizejs.com/en/latest/docs/associations/
+  };
 
+  return users;
 };

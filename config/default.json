@@ -9,7 +9,7 @@
   "authentication": {
     "entity": "user",
     "service": "users",
-    "secret": "/WQdObceHUrh/dl+o4So4uKjNvo=",
+    "secret": "DT01D+4I5X5NryfDqnybteTm0sA=",
     "authStrategies": [
       "jwt",
       "local"
@@ -40,11 +40,6 @@
       }
     }
   },
-  "mongodb": {
-    "user": "",
-    "password": "",
-    "host": "localhost",
-    "port": 27017,
-    "db": "pjsekai"
-  }
+  "postgres": "postgres://postgres:@localhost:5432/pjsekai",
+  "mongodb": "mongodb://localhost:27017/"
 }

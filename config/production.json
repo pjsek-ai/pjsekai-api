@@ -1,11 +1,6 @@
 {
   "host": "HOST",
   "port": "PORT",
-  "mongodb": {
-    "user": "MONGO_USER",
-    "password": "MONGO_PWD",
-    "host": "MONGO_HOST",
-    "port": 27017,
-    "db": "pjsekai"
-  }
+  "postgres": "DATABASE_URL",
+  "mongodb": "MONGODB"
 }

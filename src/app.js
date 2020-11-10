@@ -18,7 +18,7 @@ const channels = require('./channels');
 
 const authentication = require('./authentication');
 
-const mongoose = require('./mongoose');
+const sequelize = require('./sequelize');
 
 const mongodb = require('./mongodb');
 
@@ -42,7 +42,7 @@ app.use('/', express.static(app.get('public')));
 app.configure(express.rest());
 
 
-app.configure(mongoose);
+app.configure(sequelize);
 
 
 app.configure(mongodb);
