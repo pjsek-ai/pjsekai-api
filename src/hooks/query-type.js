@@ -7,7 +7,8 @@ module.exports = (options = {}) => {
     const { query = {} } = context.params;
 
     traverse(query).forEach(function (value) {
-      if (!isNaN(value)) {
+
+      if (!isNaN(value) && value !== "") {
         this.update(Number(value))
       }
     })
