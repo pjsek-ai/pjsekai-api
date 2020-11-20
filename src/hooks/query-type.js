@@ -7,11 +7,17 @@ module.exports = (options = {}) => {
     const { query = {} } = context.params;
 
     traverse(query).forEach(function (value) {
-
-      if (!isNaN(value) && value !== "") {
+      if (!isNaN(value) && value !== '') {
         this.update(Number(value))
       }
+      else if (value === 'true') {
+        this.update(true)
+      }
+      else if (value === 'false') {
+        this.update(false)
+      }
     })
+    console.log(context.params)
 
     return context;
   };
