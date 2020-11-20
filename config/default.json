@@ -4,7 +4,7 @@
   "public": "../public/",
   "redirect": "https://pjsek.ai",
   "paginate": {
-    "default": 50,
+    "default": 20,
     "max": 1000
   },
   "authentication": {

@@ -2,6 +2,10 @@
   "host": "HOST",
   "port": "PORT",
   "redirect": "ROOT_REDIRECT",
+  "paginate": {
+    "default": "PAGINATE_DEFAULT",
+    "max": "PAGINATE_MAX"
+  },
   "authentication": {
     "secret": "SERVER_SECRET",
     "jwtOptions": {
