@@ -1,10 +1,10 @@
-const { discard, disallow, alterItems, disablePagination } = require('feathers-hooks-common');
+const { discard, disallow, alterItems } = require('feathers-hooks-common');
 const queryType = require('../../hooks/query-type');
 
 module.exports = {
   before: {
     all: [],
-    find: [disablePagination(), queryType()],
+    find: [queryType()],
     get: [disallow()],
     create: [disallow()],
     update: [disallow()],
