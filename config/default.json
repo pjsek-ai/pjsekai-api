@@ -2,6 +2,7 @@
   "host": "localhost",
   "port": 3030,
   "public": "../public/",
+  "redirect": "https://pjsek.ai",
   "paginate": {
     "default": 10,
     "max": 50
@@ -18,8 +19,8 @@
       "header": {
         "typ": "access"
       },
-      "audience": "https://pjsekai.erikchan002.com",
-      "issuer": "feathers",
+      "audience": "pjsek.ai",
+      "issuer": "api.pjsek.ai",
       "algorithm": "HS256",
       "expiresIn": "1d"
     },

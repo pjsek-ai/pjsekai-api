@@ -6,10 +6,11 @@ const DataTypes = Sequelize.DataTypes;
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
   const users = sequelizeClient.define('users', {
-  
-  
+
+    userId: { type: DataTypes.BIGINT },
+    userProfile: { type: DataTypes.JSON },
     googleId: { type: DataTypes.STRING },
-  
+
   }, {
     hooks: {
       beforeCount(options) {
