@@ -17,7 +17,6 @@ module.exports = (options = {}) => {
         this.update(false)
       }
     })
-    console.log(context.params)
 
     return context;
   };
