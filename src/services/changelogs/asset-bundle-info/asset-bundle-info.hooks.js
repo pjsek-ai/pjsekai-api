@@ -5,7 +5,7 @@ const queryType = require('../../../hooks/query-type');
 module.exports = {
   before: {
     all: [],
-    find: [queryType(), autoQuery('$sort', { "datetime": -1 })],
+    find: [queryType(), autoQuery('$sort', { 'datetime': -1 })],
     get: [disallow()],
     create: [disallow()],
     update: [disallow()],
