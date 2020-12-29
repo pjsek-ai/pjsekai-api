@@ -1,5 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { disallow, alterItems } = require("feathers-hooks-common/types");
+const { iff, disallow, alterItems } = require("feathers-hooks-common");
 const { setField } = require('feathers-authentication-hooks');
 
 module.exports = {

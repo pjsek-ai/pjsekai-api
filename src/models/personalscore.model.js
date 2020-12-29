@@ -8,12 +8,13 @@ module.exports = function (app) {
   const personalscore = sequelizeClient.define('personalscore', {
 
     id: {
-      type: DataTypes.INT,
+      type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
       unique: true
     },
     eventid: {
-      type: DataTypes.INT,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     userid: {
@@ -21,11 +22,11 @@ module.exports = function (app) {
       allowNull: false,
     },
     score: {
-      type: DataTypes.INT,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     rank: {
-      type: DataTypes.INT,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     name: {
@@ -46,7 +47,7 @@ module.exports = function (app) {
   });
 
   // eslint-disable-next-line no-unused-vars
-  users.associate = function (models) {
+  personalscore.associate = function (models) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
   };

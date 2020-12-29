@@ -1,6 +1,6 @@
 const { discard, disallow } = require('feathers-hooks-common');
-const autoQuery = require('../../hooks/auto-query');
-const queryType = require('../../hooks/query-type');
+const autoQuery = require('../../../../hooks/auto-query');
+const queryType = require('../../../../hooks/query-type');
 
 module.exports = {
   before: {

@@ -1,4 +1,4 @@
-const { disallow, alterItems } = require("feathers-hooks-common/types");
+const { iff, disallow, alterItems } = require("feathers-hooks-common");
 
 
 module.exports = {
