@@ -4,31 +4,38 @@ const Sequelize = require('sequelize');
 const DataTypes = Sequelize.DataTypes;
 
 module.exports = function (app) {
-  const sequelizeClient = app.get('sequelizeClient');
-  const users = sequelizeClient.define('users', {
+  const sequelizeClient = app.get('sequelizeMySQLClient');
+  const rankscore = sequelizeClient.define('rankscore', {
 
-    email: {
-      type: DataTypes.STRING,
+    id: {
+      type: DataTypes.INT,
       allowNull: false,
       unique: true
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-
-    googleId: { type: DataTypes.STRING },
-
-    twitterId: { type: DataTypes.STRING },
-
-    userId: { type: DataTypes.BIGINT },
-    userProfile: { type: DataTypes.JSON },
-    lastSync: {
-      type: DataTypes.DATE(6),
-      defaultValue: new Date(0),
+    eventid: {
+      type: DataTypes.INT,
       allowNull: false,
     },
-    trackingEventIds: { type: DataTypes.ARRAY(DataTypes.INTEGER) },
+    userid: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    score: {
+      type: DataTypes.INT,
+      allowNull: false,
+    },
+    rank: {
+      type: DataTypes.INT,
+      allowNull: false,
+    },
+    name: {
+      type: DataTypes.STRING(24),
+      allowNull: false,
+    },
+    datetime: {
+      type: DataTypes.DATE(6),
+      allowNull: false,
+    },
 
   }, {
     hooks: {
@@ -44,5 +51,5 @@ module.exports = function (app) {
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
   };
 
-  return users;
+  return rankscore;
 };

@@ -10,7 +10,7 @@
   "authentication": {
     "entity": "user",
     "service": "users",
-    "secret": "DT01D+4I5X5NryfDqnybteTm0sA=",
+    "secret": "a6osT2EquigmWeZXkzj+DAZvB/w=",
     "authStrategies": [
       "jwt",
       "local"
@@ -19,8 +19,8 @@
       "header": {
         "typ": "access"
       },
-      "audience": "pjsek.ai",
-      "issuer": "api.pjsek.ai",
+      "audience": "https://yourdomain.com",
+      "issuer": "feathers",
       "algorithm": "HS256",
       "expiresIn": "1d"
     },
@@ -38,9 +38,14 @@
           "profile",
           "openid"
         ]
+      },
+      "twitter": {
+        "key": "<twitter oauth key>",
+        "secret": "<twitter oauth secret>"
       }
     }
   },
   "postgres": "postgres://postgres:@localhost:5432/pjsekai",
-  "mongodb": "mongodb://localhost:27017/"
+  "mongodb": "mongodb://localhost:27017/",
+  "mysql": "mysql://root:@localhost:3306/pjsekai_event_scores"
 }

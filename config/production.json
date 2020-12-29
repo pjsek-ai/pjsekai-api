@@ -20,5 +20,6 @@
     }
   },
   "postgres": "DATABASE_URL",
-  "mongodb": "MONGODB"
+  "mongodb": "MONGODB_URL",
+  "mysql": "EVENT_SCORES_DATABASE_URL"
 }

@@ -22,6 +22,8 @@ const sequelize = require('./sequelize');
 
 const mongodb = require('./mongodb');
 
+const sequelizeMySQL = require('./sequelizeMySQL');
+
 const app = express(feathers());
 
 // Load app configuration
@@ -46,6 +48,9 @@ app.configure(sequelize);
 
 
 app.configure(mongodb);
+
+
+app.configure(sequelizeMySQL);
 
 
 // Configure other middleware (see `middleware/index.js`)
