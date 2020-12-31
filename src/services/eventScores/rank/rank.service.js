@@ -10,10 +10,10 @@ module.exports = function (app) {
   };
 
   // Initialize our service with any options it requires
-  app.use('/eventScores/rank', new Rank(options, app));
+  app.use('/event-scores/rank', new Rank(options, app));
 
   // Get our initialized service so that we can register hooks
-  const service = app.service('eventScores/rank');
+  const service = app.service('event-scores/rank');
 
   service.hooks(hooks);
 };
