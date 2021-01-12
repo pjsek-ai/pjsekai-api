@@ -1,10 +1,11 @@
 const { discard, disallow, alterItems } = require('feathers-hooks-common');
+const autoQuery = require('../../../hooks/auto-query');
 const queryType = require('../../../hooks/query-type');
 
 module.exports = {
   before: {
     all: [],
-    find: [queryType()],
+    find: [queryType(), autoQuery('$sort', { 'id': 1 })],
     get: [disallow()],
     create: [disallow()],
     update: [disallow()],
