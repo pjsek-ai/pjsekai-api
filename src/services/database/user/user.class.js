@@ -15,7 +15,7 @@ exports.User = class User extends Service {
     }
     this.Model = db.collection(params.route.collection);
 
-    return super.find(params);
+    return await super.find(params);
   }
 
 };

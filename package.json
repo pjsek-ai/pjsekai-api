@@ -21,10 +21,10 @@
   },
   "engines": {
     "node": "^12.0.0",
-    "npm": ">= 3.0.0"
+    "yarn": ">= 1.16.0"
   },
   "scripts": {
-    "test": "npm run lint && npm run mocha",
+    "test": "yarn run lint && yarn run mocha",
     "lint": "eslint src/. test/. --config .eslintrc.json --fix",
     "dev": "nodemon src/",
     "start": "node src/",
@@ -57,6 +57,7 @@
     "mongodb-core": "^3.2.7",
     "mysql2": "^2.2.5",
     "pg": "^8.4.2",
+    "redis": "^3.0.2",
     "sequelize": "^6.3.5",
     "serve-favicon": "^2.5.0",
     "winston": "^3.3.3"

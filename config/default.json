@@ -45,6 +45,7 @@
       }
     }
   },
+  "redis": "",
   "postgres": "postgres://postgres:@localhost:5432/pjsekai",
   "mongodb": "mongodb://localhost:27017/",
   "mysql": "mysql://root:@localhost:3306/pjsekai_event_scores"

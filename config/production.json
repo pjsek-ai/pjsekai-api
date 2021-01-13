@@ -19,6 +19,7 @@
       }
     }
   },
+  "redis": "REDIS_URL",
   "postgres": "DATABASE_URL",
   "mongodb": "MONGODB_URL",
   "mysql": "EVENT_SCORES_DATABASE_URL"

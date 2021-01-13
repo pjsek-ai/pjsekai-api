@@ -1,5 +1,6 @@
 const errors = require('@feathersjs/errors');
 const Chance = require('chance');
+const cardCache = new Map();
 
 const weightedRandom = weights => {
   chance = new Chance();
@@ -11,11 +12,31 @@ exports.Gacha = class Gacha {
   constructor(options, app) {
     this.app = app;
     this.options = options || {};
+    app.get('mongoClient').then(() => this.create({}, {
+      route: {
+        gachaId: '1',
+        gachaBehaviorId: '1',
+      },
+    }));
   }
 
   async create(data, params) {
     if (Array.isArray(data)) {
       return Promise.all(data.map(current => this.create(current, params)));
+    }
+
+    const systemInfos = await this.app.service('system-info').find({
+      query: {
+        $limit: 1,
+      },
+    });
+    if (!systemInfos || systemInfos.data.length < 1) {
+      throw new errors.Conflict();
+    }
+    const systemInfo = systemInfos.data[0];
+    if (cardCache.get('dataVersion') !== systemInfo.dataVersion) {
+      cardCache.clear();
+      cardCache.set('dataVersion', systemInfo.dataVersion);
     }
 
     const gachas = await this.app.service('database/master/:collection').find({
@@ -30,18 +51,12 @@ exports.Gacha = class Gacha {
       throw new errors.NotFound();
     }
     const gacha = gachas.data[0];
-    const gachaBehavior = gacha.gachaBehaviors.find(gachaBehavior => `${gachaBehavior.id}` === params.route.gachaBehaviorId);
-    if (!gachaBehavior) {
-      throw new errors.NotFound();
-    }
-    const rarityWeights = [...Array(4).keys()].map(x => ({
-      key: x + 1,
-      weight: gacha[`rarity${x + 1}Rate`],
-    }));
-    const cardWeights = {};
-    for (var rarity = 1; rarity <= 4; ++rarity) {
-      let weights = []
-      for (const gachaDetail of gacha.gachaDetails) {
+    for (const gachaDetail of gacha.gachaDetails) {
+      let card;
+      if (cardCache.has(gachaDetail.cardId)) {
+        card = cardCache.get(gachaDetail.cardId);
+      }
+      else {
         const cards = await this.app.service('database/master/:collection').find({
           query: {
             id: gachaDetail.cardId,
@@ -67,15 +82,28 @@ exports.Gacha = class Gacha {
         if (!cards || cards.data.length < 1) {
           throw new errors.Conflict();
         }
-        const card = cards.data[0];
-        if (card.rarity === rarity) {
-          weights = [...weights, {
-            key: card,
-            weight: gachaDetail.weight,
-          }];
-        }
+        card = cards.data[0];
+        cardCache.set(card.id, card);
       }
-      cardWeights[rarity] = weights;
+
+      gachaDetail["card"] = card;
+    }
+
+    const gachaBehavior = gacha.gachaBehaviors.find(gachaBehavior => `${gachaBehavior.id}` === params.route.gachaBehaviorId);
+    if (!gachaBehavior) {
+      throw new errors.NotFound();
+    }
+
+    const rarityWeights = [...Array(4).keys()].map(x => ({
+      key: x + 1,
+      weight: gacha[`rarity${x + 1}Rate`],
+    }));
+    const cardWeights = {};
+    for (var rarity = 1; rarity <= 4; ++rarity) {
+      cardWeights[rarity] = gacha.gachaDetails.filter(gachaDetail => gachaDetail.card.rarity === rarity).map(gachaDetail => ({
+        key: gachaDetail.card,
+        weight: gachaDetail.weight,
+      }));
     }
 
     const count = data.count || 1;
