@@ -1,10 +1,53 @@
 const errors = require('@feathersjs/errors');
 const Chance = require('chance');
-const cardCache = new Map();
 
 const weightedRandom = weights => {
   chance = new Chance();
   return chance.weighted(weights.map(({ key, weight }) => key), weights.map(({ key, weight }) => weight));
+}
+
+const validateCache = async (app, cache) => {
+  const systemInfos = await app.service('system-info').find({
+    query: {
+      $limit: 1,
+    },
+  });
+  if (!systemInfos || systemInfos.data.length < 1) {
+    throw new errors.Conflict();
+  }
+  const systemInfo = systemInfos.data[0];
+  if (cache.get('dataVersion') !== systemInfo.dataVersion) {
+    cache.clear();
+    const cards = await app.service('database/master/:collection').find({
+      query: {
+        $sort: {
+          id: 1,
+        },
+        $limit: 1000,
+        $select: [
+          "id",
+          "characterId",
+          "rarity",
+          "attr",
+          "supportUnit",
+          "skillId",
+          "cardSkillName",
+          "prefix",
+          "assetbundleName",
+          "gachaPhrase",
+          "flavorText",
+          "releaseAt",
+        ]
+      },
+      route: {
+        collection: 'cards',
+      },
+    });
+    cards.data.forEach(card => {
+      cache.set(card.id, card);
+    });
+    cache.set('dataVersion', systemInfo.dataVersion);
+  }
 }
 
 /* eslint-disable no-unused-vars */
@@ -12,12 +55,8 @@ exports.Gacha = class Gacha {
   constructor(options, app) {
     this.app = app;
     this.options = options || {};
-    app.get('mongoClient').then(() => this.create({}, {
-      route: {
-        gachaId: '1',
-        gachaBehaviorId: '1',
-      },
-    }));
+    this.cardCache = new Map();
+    app.get('mongoClient').then(() => validateCache(this.app, this.cardCache));
   }
 
   async create(data, params) {
@@ -25,19 +64,7 @@ exports.Gacha = class Gacha {
       return Promise.all(data.map(current => this.create(current, params)));
     }
 
-    const systemInfos = await this.app.service('system-info').find({
-      query: {
-        $limit: 1,
-      },
-    });
-    if (!systemInfos || systemInfos.data.length < 1) {
-      throw new errors.Conflict();
-    }
-    const systemInfo = systemInfos.data[0];
-    if (cardCache.get('dataVersion') !== systemInfo.dataVersion) {
-      cardCache.clear();
-      cardCache.set('dataVersion', systemInfo.dataVersion);
-    }
+    await validateCache(this.app, this.cardCache);
 
     const gachas = await this.app.service('database/master/:collection').find({
       query: {
@@ -53,8 +80,8 @@ exports.Gacha = class Gacha {
     const gacha = gachas.data[0];
     for (const gachaDetail of gacha.gachaDetails) {
       let card;
-      if (cardCache.has(gachaDetail.cardId)) {
-        card = cardCache.get(gachaDetail.cardId);
+      if (this.cardCache.has(gachaDetail.cardId)) {
+        card = this.cardCache.get(gachaDetail.cardId);
       }
       else {
         const cards = await this.app.service('database/master/:collection').find({
@@ -83,7 +110,7 @@ exports.Gacha = class Gacha {
           throw new errors.Conflict();
         }
         card = cards.data[0];
-        cardCache.set(card.id, card);
+        this.cardCache.set(card.id, card);
       }
 
       gachaDetail["card"] = card;
