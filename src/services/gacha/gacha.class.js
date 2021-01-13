@@ -3,10 +3,10 @@ const Chance = require('chance');
 
 const weightedRandom = weights => {
   chance = new Chance();
-  return chance.weighted(weights.map(({ key, weight }) => key), weights.map(({ key, weight }) => weight));
+  return chance.weighted(weights.map(({ key }) => key), weights.map(({ weight }) => weight));
 }
 
-const validateCache = async (app, cache) => {
+const validateCache = async (app, cardCache, gachaCache) => {
   const systemInfos = await app.service('system-info').find({
     query: {
       $limit: 1,
@@ -16,8 +16,8 @@ const validateCache = async (app, cache) => {
     throw new errors.Conflict();
   }
   const systemInfo = systemInfos.data[0];
-  if (cache.get('dataVersion') !== systemInfo.dataVersion) {
-    cache.clear();
+  if (cardCache.get('dataVersion') !== systemInfo.dataVersion) {
+    cardCache.clear();
     const cards = await app.service('database/master/:collection').find({
       query: {
         $sort: {
@@ -44,9 +44,27 @@ const validateCache = async (app, cache) => {
       },
     });
     cards.data.forEach(card => {
-      cache.set(card.id, card);
+      cardCache.set(card.id, card);
     });
-    cache.set('dataVersion', systemInfo.dataVersion);
+    cardCache.set('dataVersion', systemInfo.dataVersion);
+  }
+  if (gachaCache.get('dataVersion') !== systemInfo.dataVersion) {
+    gachaCache.clear();
+    const gachas = await app.service('database/master/:collection').find({
+      query: {
+        $sort: {
+          id: 1,
+        },
+        $limit: 1000,
+      },
+      route: {
+        collection: 'gachas',
+      },
+    });
+    gachas.data.forEach(gacha => {
+      gachaCache.set(gacha.id, gacha);
+    });
+    gachaCache.set('dataVersion', systemInfo.dataVersion);
   }
 }
 
@@ -56,7 +74,8 @@ exports.Gacha = class Gacha {
     this.app = app;
     this.options = options || {};
     this.cardCache = new Map();
-    app.get('mongoClient').then(() => validateCache(this.app, this.cardCache));
+    this.gachaCache = new Map();
+    app.get('mongoClient').then(() => validateCache(this.app, this.cardCache, this.gachaCache));
   }
 
   async create(data, params) {
@@ -64,20 +83,33 @@ exports.Gacha = class Gacha {
       return Promise.all(data.map(current => this.create(current, params)));
     }
 
-    await validateCache(this.app, this.cardCache);
+    const start = Date.now();
 
-    const gachas = await this.app.service('database/master/:collection').find({
-      query: {
-        id: params.route.gachaId,
-      },
-      route: {
-        collection: 'gachas',
-      },
-    });
-    if (!gachas || gachas.data.length < 1) {
-      throw new errors.NotFound();
+    await validateCache(this.app, this.cardCache, this.gachaCache);
+
+    console.log('1', Date.now() - start);
+    const gachaId = parseInt(params.route.gachaId);
+    let gacha;
+    if (this.gachaCache.has(gachaId)) {
+      gacha = this.gachaCache.get(gachaId);
     }
-    const gacha = gachas.data[0];
+    else {
+      const gachas = await this.app.service('database/master/:collection').find({
+        query: {
+          id: params.route.gachaId,
+        },
+        route: {
+          collection: 'gachas',
+        },
+      });
+      if (!gachas || gachas.data.length < 1) {
+        throw new errors.NotFound();
+      }
+      gacha = gachas.data[0];
+      this.gachaCache.set(gacha.id, gacha);
+    }
+
+    console.log('2', Date.now() - start);
     for (const gachaDetail of gacha.gachaDetails) {
       let card;
       if (this.cardCache.has(gachaDetail.cardId)) {
@@ -116,11 +148,13 @@ exports.Gacha = class Gacha {
       gachaDetail["card"] = card;
     }
 
+    console.log('3', Date.now() - start);
     const gachaBehavior = gacha.gachaBehaviors.find(gachaBehavior => `${gachaBehavior.id}` === params.route.gachaBehaviorId);
     if (!gachaBehavior) {
       throw new errors.NotFound();
     }
 
+    console.log('4', Date.now() - start);
     const rarityWeights = [...Array(4).keys()].map(x => ({
       key: x + 1,
       weight: gacha[`rarity${x + 1}Rate`],
@@ -133,9 +167,11 @@ exports.Gacha = class Gacha {
       }));
     }
 
+    console.log('5', Date.now() - start);
     const count = data.count || 1;
     return [...Array(count).keys()].map(i => {
       let result = [...Array(gachaBehavior.spinCount).keys()].map(i => weightedRandom(cardWeights[weightedRandom(rarityWeights)]));
+      console.log('6', i, Date.now() - start);
       const match = gachaBehavior.gachaBehaviorType.match(/^over_rarity_([3-4])_once$/);
       if (match && result.every(card => card.rarity < match[1])) {
         const rerollRarityWeights = rarityWeights.reduce((acc, cur) => cur.key > match[1] ?
@@ -148,6 +184,7 @@ exports.Gacha = class Gacha {
         result.pop();
         result = [...result, weightedRandom(cardWeights[rarity])]
       }
+      console.log('7', i, Date.now() - start);
       return result;
     });
 
