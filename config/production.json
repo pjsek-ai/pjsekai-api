@@ -16,6 +16,10 @@
       "google": {
         "key": "GOOGLE_OAUTH_KEY",
         "secret": "GOOGLE_OAUTH_SECRET"
+      },
+      "twitter": {
+        "key": "TWITTER_OAUTH_KEY",
+        "secret": "TWITTER_OAUTH_SECRET"
       }
     }
   },
