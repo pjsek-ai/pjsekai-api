@@ -87,7 +87,6 @@ exports.Gacha = class Gacha {
 
     await validateCache(this.app, this.cardCache, this.gachaCache);
 
-    console.log('1', Date.now() - start);
     const gachaId = parseInt(params.route.gachaId);
     let gacha;
     if (this.gachaCache.has(gachaId)) {
@@ -109,7 +108,6 @@ exports.Gacha = class Gacha {
       this.gachaCache.set(gacha.id, gacha);
     }
 
-    console.log('2', Date.now() - start);
     for (const gachaDetail of gacha.gachaDetails) {
       let card;
       if (this.cardCache.has(gachaDetail.cardId)) {
@@ -148,13 +146,11 @@ exports.Gacha = class Gacha {
       gachaDetail["card"] = card;
     }
 
-    console.log('3', Date.now() - start);
     const gachaBehavior = gacha.gachaBehaviors.find(gachaBehavior => `${gachaBehavior.id}` === params.route.gachaBehaviorId);
     if (!gachaBehavior) {
       throw new errors.NotFound();
     }
 
-    console.log('4', Date.now() - start);
     const rarityWeights = [...Array(4).keys()].map(x => ({
       key: x + 1,
       weight: gacha[`rarity${x + 1}Rate`],
@@ -167,11 +163,9 @@ exports.Gacha = class Gacha {
       }));
     }
 
-    console.log('5', Date.now() - start);
     const count = data.count || 1;
     return [...Array(count).keys()].map(i => {
       let result = [...Array(gachaBehavior.spinCount).keys()].map(i => weightedRandom(cardWeights[weightedRandom(rarityWeights)]));
-      console.log('6', i, Date.now() - start);
       const match = gachaBehavior.gachaBehaviorType.match(/^over_rarity_([3-4])_once$/);
       if (match && result.every(card => card.rarity < match[1])) {
         const rerollRarityWeights = rarityWeights.reduce((acc, cur) => cur.key > match[1] ?
@@ -184,7 +178,6 @@ exports.Gacha = class Gacha {
         result.pop();
         result = [...result, weightedRandom(cardWeights[rarity])]
       }
-      console.log('7', i, Date.now() - start);
       return result;
     });
 
