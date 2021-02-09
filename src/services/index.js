@@ -12,6 +12,7 @@ const databaseCollectionInfoMaster = require('./database/collectionInfo/master/m
 const databaseCollectionInfoUser = require('./database/collectionInfo/user/user.service.js');
 const eventRankings = require('./event-rankings/event-rankings.service.js');
 const gacha = require('./gacha/gacha.service.js');
+const patrons = require('./patrons/patrons.service.js');
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
   app.configure(users);
@@ -28,4 +29,5 @@ module.exports = function (app) {
   app.configure(databaseCollectionInfoUser);
   app.configure(eventRankings);
   app.configure(gacha);
+  app.configure(patrons);
 };
