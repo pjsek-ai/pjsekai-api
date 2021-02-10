@@ -1,4 +1,4 @@
-const { discard, disallow, alterItems, disablePagination } = require('feathers-hooks-common');
+const { disallow, keep, disablePagination } = require('feathers-hooks-common');
 const autoQuery = require('../../hooks/auto-query');
 const queryType = require('../../hooks/query-type');
 
@@ -8,7 +8,7 @@ module.exports = {
     find: [
       disablePagination(),
       queryType(),
-      autoQuery('$sort', { 'datetime': -1 })
+      autoQuery('$sort', { 'Patronage Since Date': 1 })
     ],
     get: [disallow()],
     create: [disallow()],
@@ -19,13 +19,11 @@ module.exports = {
 
   after: {
     all: [
-      discard('_id'),
-      alterItems(item => ({
-        ...item,
-        ...item.datetime ? {
-          datetime: item.datetime.getTime()
-        } : {},
-      }))
+      keep(
+        'Name',
+        'Tier',
+        'Patronage Since Date',
+      )
     ],
     find: [],
     get: [],
